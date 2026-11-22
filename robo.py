@@ -92,6 +92,7 @@ def extrair(page: Page, foto=None) -> list[Livro]:
         while True:
             todos.extend(livros_da_pagina(page, nome))
             if foto:
+                page.wait_for_load_state("load")  # no modo demo, espera as capas para o quadro sair completo
                 foto(f"categoria {n}/{len(cats)} · {len(todos)} livros")
             proxima = page.locator("li.next a")
             if not proxima.count():
