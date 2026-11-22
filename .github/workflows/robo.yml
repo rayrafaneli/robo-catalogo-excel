@@ -1,0 +1,30 @@
+name: Robô de catálogo
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 11 * * 1-5"   # dias úteis, 08:00 (Brasília)
+  push:
+    branches: [main]
+
+jobs:
+  relatorio:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt pytest
+      - run: pytest -q
+      - run: python -m playwright install --with-deps chromium
+      - name: Extrai o catálogo e gera o relatório
+        run: python robo.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: relatorio
+          path: |
+            saida/catalogo.xlsx
+            saida/email.html
+            saida/grafico.png
+            saida/livros.csv
